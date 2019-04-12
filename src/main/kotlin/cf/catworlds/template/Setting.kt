@@ -41,7 +41,7 @@ object Setting {
                 field.set(config.get(path))
 //                field.set(Setting, config.get(path))
             } catch (e: IllegalArgumentException) {
-                sender.sendMessage(TextHelper.format(BasicText.ConfigLoadError, path, "" + config.get(path), field.returnType.javaType.typeName, "" + config.defaults.get(path)))
+                sender.sendMessage(TextHelper.format(BasicText.ConfigLoadError, path, "" + config.get(path), field.returnType.javaType.typeName, "" + config.defaults!!.get(path)))
             } catch (ignore: Throwable) {
                 ignore.printStackTrace()
             }

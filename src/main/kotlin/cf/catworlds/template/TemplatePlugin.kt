@@ -40,7 +40,7 @@ class TemplatePlugin : JavaPlugin() {
     }
 
     private fun loadCommand() {
-        getCommand("test").executor = MainCommand(this)
+        getCommand("test")!!.setExecutor(MainCommand(this))
     }
 
     private fun loadListener() {
