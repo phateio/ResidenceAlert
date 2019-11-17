@@ -10,5 +10,7 @@ target
 out
 run
 
+/lib
+
 /dependency-reduced-pom.xml
 *-private.sh
