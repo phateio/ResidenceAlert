@@ -3,7 +3,7 @@ version: ${version}
 api-version: 1.13
 description: '${description}'
 author: WhiteCat
-# depend: []
+depend: ["Residence"]
 main: ${main_class}
 #commands:
 #  test:
