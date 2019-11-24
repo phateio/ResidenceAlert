@@ -15,53 +15,14 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.bukkit.Material.FIRE;
-import static org.bukkit.Material.LAVA_BUCKET;
+import static io.github.phateio.residencealert.Setting.*;
 
 public class ResidenceAlert extends JavaPlugin implements Listener {
-
-    private boolean includeServerOwner;
-    private Set<String> alertResidenceOwner;
-    private String alertMessage;
-    private Set<Material> alertBlocks;
 
     @Override
     public void onEnable() {
         final FileConfiguration config = getConfig();
-
-        final String path_include_server_owner = "include-server-owner";
-        final String path_residence_owner_list = "alert-residence-owner";
-        final String path_message = "alert-message";
-        final String path_blocks = "alert-blocks-type-display";
-
-        includeServerOwner = true;
-        alertResidenceOwner = Collections.emptySet();
-        alertMessage = "&c[Honeypot] player ${Player} placed ${Block} block at {world=${world}, x=${x}, y=${y}, z=${z}}";
-        alertBlocks = new HashSet<>(Arrays.asList(LAVA_BUCKET, FIRE));
-
-        config.addDefault(path_include_server_owner, includeServerOwner);
-        config.addDefault(path_residence_owner_list, new ArrayList<>(alertResidenceOwner));
-        config.addDefault(path_message, alertMessage);
-        final List<String> blocksNameList = alertBlocks.stream().map(Material::name).collect(Collectors.toList());
-        config.addDefault(path_blocks, blocksNameList);
-        config.options().copyDefaults(true);
-
-        includeServerOwner = config.getBoolean(path_include_server_owner, includeServerOwner);
-        alertResidenceOwner = new HashSet<>(config.getStringList(path_include_server_owner));
-        alertMessage = config.getString(path_message, alertMessage);
-        alertBlocks = config.getStringList(path_blocks).stream().map(name -> {
-            try {
-                return Material.valueOf(name);
-            } catch (IllegalArgumentException e) {
-                getLogger().warning(name + " is not a Material value.");
-                return null;
-            }
-        }).filter(Objects::nonNull)
-                .collect(Collectors.toCollection(HashSet::new));
-
+        Setting.syncFile(getLogger(), config);
         saveConfig();
 
         residenceManagerAPI = Residence.getInstance().getResidenceManagerAPI();
