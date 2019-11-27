@@ -43,14 +43,17 @@ public class ResidenceAlert extends JavaPlugin implements Listener {
     }
 
     private void alertCheck(Player player, Material type, Location loc) {
+        if (loc.getBlockY() < ignoreYBelow) return;
+        if (disabledWorlds.contains(loc.getWorld().getName())) return;
         if (!alertBlocks.contains(type)) return;
 
         ClaimedResidence claim = residenceManagerAPI.getByLoc(loc);
         if (claim == null) return;
 
-        final boolean alertServerLand = includeServerLand && isServerLandWorkaround(claim);
-
-        if (!alertServerLand && !alertResidenceOwner.contains(claim.getOwner())) return;
+        if (!(includeServerLand && isServerLandWorkaround(claim)) // not serverLand check
+                && !alertResidenceOwner.contains(claim.getOwner()) // owner not in whitelist check
+                && isNotEnabledClaim(claim.getName())
+        ) return;
 
         final String output = alertMessage
                 .replace("${Block}", type.name())
@@ -61,6 +64,12 @@ public class ResidenceAlert extends JavaPlugin implements Listener {
                 .replace("${world}", loc.getWorld().getName());
 
         getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', output));
+    }
+
+    private static boolean isNotEnabledClaim(String claimName) {
+        // check "Spawn2014.village.sub1.sub2"
+        // in ["Spawn2014.village", "Spawn2018.village"]
+        return enabledClaims.stream().noneMatch(claimName::startsWith);
     }
 
     private static boolean isServerLandWorkaround(ClaimedResidence claim) {
