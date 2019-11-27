@@ -1,5 +1,6 @@
 package io.github.phateio.residencealert;
 
+import com.google.common.collect.Sets;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -12,8 +13,17 @@ import static org.bukkit.Material.LAVA_BUCKET;
 
 public class Setting {
 
-    private static final String path_include_server_owner = "include-server-owner";
-    static boolean includeServerOwner;
+    private static final String path_include_server_land = "include-server-land";
+    static boolean includeServerLand;
+
+    private static final String path_disabled_worlds = "disabled-worlds";
+    static Set<String> disabledWorlds;
+
+    private static final String path_ignore_y_below = "ignore-y-below";
+    static int ignoreYBelow;
+
+    private static final String path_enabled_claims = "enabled-residences";
+    static Set<String> enabledClaims;
 
     private static final String path_residence_owner_list = "alert-residence-owner";
     static Set<String> alertResidenceOwner;
@@ -31,8 +41,17 @@ public class Setting {
     }
 
     private static void writeDefault(FileConfiguration config) {
-        includeServerOwner = true;
-        config.addDefault(path_include_server_owner, true);
+        includeServerLand = false;
+        config.addDefault(path_include_server_land, false);
+
+        disabledWorlds = Sets.newHashSet("world2014_nether");
+        config.addDefault(path_disabled_worlds, new ArrayList<>(disabledWorlds));
+
+        ignoreYBelow = 64;
+        config.addDefault(path_ignore_y_below, ignoreYBelow);
+
+        enabledClaims = Sets.newHashSet("Spawn2014.village");
+        config.addDefault(path_enabled_claims, enabledClaims);
 
         alertResidenceOwner = Collections.emptySet();
         config.addDefault(path_residence_owner_list, new ArrayList<>(alertResidenceOwner));
@@ -46,8 +65,11 @@ public class Setting {
     }
 
     private static void readConfig(FileConfiguration config, Logger logger) {
-        includeServerOwner = config.getBoolean(path_include_server_owner, includeServerOwner);
-        alertResidenceOwner = new HashSet<>(config.getStringList(path_include_server_owner));
+        includeServerLand = config.getBoolean(path_include_server_land, includeServerLand);
+        disabledWorlds = new HashSet<>(config.getStringList(path_disabled_worlds));
+        ignoreYBelow = config.getInt(path_ignore_y_below, ignoreYBelow);
+        enabledClaims = new HashSet<>(config.getStringList(path_enabled_claims));
+        alertResidenceOwner = new HashSet<>(config.getStringList(path_include_server_land));
         alertMessage = config.getString(path_message, alertMessage);
         alertBlocks = config.getStringList(path_blocks).stream().map(name -> {
             try {

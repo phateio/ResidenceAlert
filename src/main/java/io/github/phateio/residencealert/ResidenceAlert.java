@@ -48,7 +48,7 @@ public class ResidenceAlert extends JavaPlugin implements Listener {
         ClaimedResidence claim = residenceManagerAPI.getByLoc(loc);
         if (claim == null) return;
 
-        final boolean alertServerLand = includeServerOwner && isServerLandWorkaround(claim);
+        final boolean alertServerLand = includeServerLand && isServerLandWorkaround(claim);
 
         if (!alertServerLand && !alertResidenceOwner.contains(claim.getOwner())) return;
 
