@@ -51,7 +51,7 @@ public class Setting {
         config.addDefault(path_ignore_y_below, ignoreYBelow);
 
         enabledClaims = Sets.newHashSet("Spawn2014.village");
-        config.addDefault(path_enabled_claims, enabledClaims);
+        config.addDefault(path_enabled_claims, new ArrayList<>(enabledClaims));
 
         alertResidenceOwner = Collections.emptySet();
         config.addDefault(path_residence_owner_list, new ArrayList<>(alertResidenceOwner));
