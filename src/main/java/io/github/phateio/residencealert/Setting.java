@@ -62,7 +62,7 @@ public class Setting {
         alertResidenceOwner = Collections.emptySet();
         config.addDefault(path_residence_owner_list, new ArrayList<>(alertResidenceOwner));
 
-        alertMessage = "&c[Honeypot] player ${Player} placed ${Block} block at {world=${world}, x=${x}, y=${y}, z=${z}}";
+        alertMessage = "&c[Honeypot] player ${Player} placed ${Block} on ${onClicked} at {world=${world}, x=${x}, y=${y}, z=${z}}";
         config.addDefault(path_message, alertMessage);
 
         alertBlocks = Sets.newHashSet(LAVA_BUCKET, FIRE);
