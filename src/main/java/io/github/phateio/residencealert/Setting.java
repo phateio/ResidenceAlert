@@ -2,14 +2,15 @@ package io.github.phateio.residencealert;
 
 import com.google.common.collect.Sets;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static org.bukkit.Material.FIRE;
-import static org.bukkit.Material.LAVA_BUCKET;
+import static org.bukkit.Material.*;
+import static org.bukkit.block.BlockFace.*;
 
 public class Setting {
 
@@ -33,6 +34,11 @@ public class Setting {
 
     private static final String path_blocks = "alert-blocks-type-display";
     static Set<Material> alertBlocks;
+
+    private static final String path_ignoreNearbyBlocks = "ignore-nearby-blocks";
+    static Set<Material> ignoreNearbyBlocks;
+
+    static final List<BlockFace> checkFaces = Arrays.asList(DOWN, UP, EAST, WEST, SOUTH, NORTH);
 
     static void syncFile(Logger logger, FileConfiguration config) {
         writeDefault(config);
@@ -59,9 +65,15 @@ public class Setting {
         alertMessage = "&c[Honeypot] player ${Player} placed ${Block} block at {world=${world}, x=${x}, y=${y}, z=${z}}";
         config.addDefault(path_message, alertMessage);
 
-        alertBlocks = new HashSet<>(Arrays.asList(LAVA_BUCKET, FIRE));
-        final List<String> blocksNameList = alertBlocks.stream().map(Material::name).collect(Collectors.toList());
-        config.addDefault(path_blocks, blocksNameList);
+        alertBlocks = Sets.newHashSet(LAVA_BUCKET, FIRE);
+        config.addDefault(path_blocks, toStringList(alertBlocks));
+
+        ignoreNearbyBlocks = Sets.newHashSet(GRASS_BLOCK, WATER, OBSIDIAN);
+        config.addDefault(path_ignoreNearbyBlocks, toStringList(ignoreNearbyBlocks));
+    }
+
+    private static List<String> toStringList(Collection<Material> collection) {
+        return collection.stream().map(Material::name).collect(Collectors.toList());
     }
 
     private static void readConfig(FileConfiguration config, Logger logger) {
@@ -71,7 +83,12 @@ public class Setting {
         enabledClaims = new HashSet<>(config.getStringList(path_enabled_claims));
         alertResidenceOwner = new HashSet<>(config.getStringList(path_include_server_land));
         alertMessage = config.getString(path_message, alertMessage);
-        alertBlocks = config.getStringList(path_blocks).stream().map(name -> {
+        alertBlocks = toMaterialSet(config.getStringList(path_blocks), logger);
+        ignoreNearbyBlocks = toMaterialSet(config.getStringList(path_ignoreNearbyBlocks), logger);
+    }
+
+    private static Set<Material> toMaterialSet(List<String> list, Logger logger) {
+        return list.stream().map(name -> {
             try {
                 return Material.valueOf(name);
             } catch (IllegalArgumentException e) {

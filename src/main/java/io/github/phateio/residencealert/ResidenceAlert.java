@@ -46,6 +46,11 @@ public class ResidenceAlert extends JavaPlugin implements Listener {
         if (loc.getBlockY() < ignoreYBelow) return;
         if (disabledWorlds.contains(loc.getWorld().getName())) return;
         if (!alertBlocks.contains(type)) return;
+        if (
+                checkFaces.stream()
+                        .map(it -> loc.clone().add(it.getDirection()).getBlock().getType())
+                        .anyMatch(ignoreNearbyBlocks::contains)
+        ) return;
 
         ClaimedResidence claim = residenceManagerAPI.getByLoc(loc);
         if (claim == null) return;
