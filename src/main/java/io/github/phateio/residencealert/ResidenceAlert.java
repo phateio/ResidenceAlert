@@ -34,7 +34,7 @@ public class ResidenceAlert extends JavaPlugin implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
-        alertCheck(event.getPlayer(), event.getBlock().getType(), event.getBlockPlaced().getType(), event.getBlock().getLocation());
+        alertCheck(event.getPlayer(), event.getBlockAgainst().getType(), event.getBlockPlaced().getType(), event.getBlock().getLocation());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -46,10 +46,9 @@ public class ResidenceAlert extends JavaPlugin implements Listener {
         if (loc.getBlockY() < ignoreYBelow) return;
         if (disabledWorlds.contains(loc.getWorld().getName())) return;
         if (!alertBlocks.contains(type)) return;
-        if (
-                checkFaces.stream()
-                        .map(it -> loc.clone().add(it.getDirection()).getBlock().getType())
-                        .anyMatch(ignoreNearbyBlocks::contains)
+        if (checkFaces.stream()
+                .map(it -> loc.clone().add(it.getDirection()).getBlock().getType())
+                .anyMatch(ignoreNearbyBlocks::contains)
         ) return;
 
         ClaimedResidence claim = residenceManagerAPI.getByLoc(loc);
