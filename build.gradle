@@ -40,6 +40,12 @@ dependencies {
 }
 
 processResources {
+    inputs.property "version", project.version
+    inputs.property "name", plugin_name as String
+    inputs.property "description", plugin_description as String
+    inputs.property "main_class", plugin_main_class as String
+    inputs.property "buildDate", new Date()
+
     from (sourceSets.main.resources.srcDirs) {
         expand ([
                 version: version,
